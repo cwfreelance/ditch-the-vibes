@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{.Title}} · Ditch the Vibes</title>
+<meta name="description" content="A short, step-by-step guide to sharing your app’s code on GitHub.">
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0b0d11" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='6' fill='%232563eb'/><path d='m6 7 5 5-5 5m7-10 5 5-5 5' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="{{.FontsHref}}">
+{{if .Tweaks}}<script>
+// Keep TW_DEF in sync with the :root defaults in the stylesheet below.
+const TW_DEF={body:"Inter",heading:"",hw:"700",prompt:"",accent:"#2563eb",theme:"light dark",size:"17",radius:"14",measure:"600"};
+function twApply(t){const s=document.documentElement.style,f=n=>'"'+n+'",system-ui,sans-serif';
+s.setProperty('--font-body',f(t.body));
+s.setProperty('--font-heading',t.heading?f(t.heading):'var(--font-body)');
+s.setProperty('--font-prompt',t.prompt?'"'+t.prompt+'",ui-monospace,monospace':'var(--font-body)');
+s.setProperty('--heading-weight',t.hw);s.setProperty('--accent',t.accent);s.colorScheme=t.theme;
+s.setProperty('--size',t.size+'px');s.setProperty('--radius',t.radius+'px');s.setProperty('--measure',t.measure+'px')}
+let TW=Object.assign({},TW_DEF,JSON.parse(localStorage.tweaks||'{}'));twApply(TW);
+</script>{{end}}
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --font-body:"Inter",system-ui,sans-serif;
+  --font-heading:var(--font-body);
+  --font-prompt:var(--font-body);
+  --heading-weight:700;
+  --accent:#2563eb;
+  --size:17px;
+  --radius:14px;
+  --measure:600px;
+  color-scheme:light dark;
+  --bg:light-dark(#f5f6f8,#0b0d11);
+  --surface:light-dark(#fff,#151920);
+  --fg:light-dark(#121418,#e9ecf1);
+  --muted:light-dark(#5f6878,#97a1b2);
+  --border:light-dark(#e2e5ea,#272d38);
+  --accent-fg:#fff;
+  --accent-text:light-dark(var(--accent),color-mix(in oklab,var(--accent) 65%,white));
+  --accent-soft:color-mix(in oklab,var(--accent) 11%,transparent);
+}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100dvh;background:var(--bg);color:var(--fg);font:400 var(--size)/1.55 var(--font-body);-webkit-font-smoothing:antialiased}
+svg{width:1.25em;height:1.25em;flex:none}
+.inl{vertical-align:-.25em}
+.wrap{max-width:var(--measure);margin:0 auto;padding:20px 20px 112px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:36px}
+.brand{font:800 .95em var(--font-heading);letter-spacing:-.02em}
+.chip{font-size:.8em;font-weight:600;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:4px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eyebrow{margin:0 0 10px;font-size:.78em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-text)}
+.bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin:0 0 24px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:inherit}
+h1{margin:0 0 .45em;font:var(--heading-weight) clamp(1.7rem,5vw,2.25rem)/1.12 var(--font-heading);letter-spacing:-.025em;text-wrap:balance}
+.lead{margin:0 0 1.5em;font-size:1.06em}
+.options{display:grid;gap:12px;margin:0 0 20px}
+.card{display:flex;align-items:center;gap:16px;padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:inherit;text-decoration:none;transition:border-color .15s,transform .15s,box-shadow .15s}
+.card:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 8px 24px -12px color-mix(in oklab,var(--accent) 45%,transparent)}
+.card .ic{width:48px;height:48px;display:grid;place-items:center;border-radius:calc(var(--radius) - 4px);background:var(--accent-soft);color:var(--accent-text);flex:none}
+.card .ic svg{width:24px;height:24px}
+.card .txt{min-width:0;display:grid;gap:1px}
+.card small{font-size:.72em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.card b{font-weight:650;font-size:1.04em}
+.card .txt>span{color:var(--muted);font-size:.92em}
+.card .chev{margin-left:auto;color:var(--muted)}
+.callout{display:flex;gap:12px;padding:14px 16px;margin:0 0 20px;border-radius:var(--radius);background:color-mix(in oklab,#f59e0b 12%,var(--surface));border:1px solid color-mix(in oklab,#f59e0b 40%,var(--border))}
+.callout svg{color:#d97706;margin-top:.15em}
+.callout b{display:block;margin-bottom:2px}
+.prompt{margin:0 0 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.prompt header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 8px 8px 16px;border-bottom:1px solid var(--border)}
+.prompt header span{font-size:.78em;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.prompt pre{margin:0;padding:16px;max-height:45vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-family:var(--font-prompt);font-size:.92em;line-height:1.55}
+.steps{list-style:none;counter-reset:s;margin:0 0 20px;padding:0;display:grid;gap:10px}
+.steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.steps li::before{content:counter(s);flex:none;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--accent-fg);font-weight:700;font-size:.82em;margin-top:.05em}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:var(--accent-soft);color:var(--accent-text);padding:.1em .4em;border-radius:6px}
+.note{margin:0;color:var(--muted);font-size:.95em}
+.finish{width:64px;height:64px;display:grid;place-items:center;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);margin:0 0 20px}
+.finish svg{width:34px;height:34px}
+.foot{display:flex;gap:10px;align-items:flex-start;margin-top:32px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:.9em}
+.foot svg{margin-top:.15em}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 18px;border-radius:calc(var(--radius) - 2px);border:1px solid var(--border);background:var(--surface);color:inherit;font:600 1em var(--font-body);text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,filter .15s}
+.btn:hover{border-color:color-mix(in oklab,var(--fg) 25%,var(--border))}
+.btn.primary{background:var(--accent);color:var(--accent-fg);border-color:transparent}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.icon{width:48px;padding:0}
+.btn svg{width:20px;height:20px}
+.copy{min-height:40px;padding:6px 14px;font-size:.92em}
+.copy span{display:inline-flex;align-items:center;gap:8px}
+.copy .done,.copy.copied .idle{display:none}
+.copy.copied .done{display:inline-flex}
+.nav{position:fixed;inset:auto 0 0;z-index:5;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:color-mix(in oklab,var(--bg) 82%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--border)}
+.nav>div{max-width:var(--measure);margin:0 auto;display:flex;gap:10px;align-items:center}
+.nav .primary{margin-left:auto;padding-inline:22px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+{{if .Tweaks}}
+.tw{position:fixed;top:0;right:0;bottom:0;z-index:10;width:290px;overflow:auto;padding:48px 16px 16px;background:var(--surface);border-left:1px solid var(--border);font-size:13px;display:grid;gap:12px;align-content:start}
+.tw h2{margin:0;font-size:14px}
+.tw label{display:grid;gap:4px;font-weight:600;color:var(--muted)}
+.tw select,.tw input,.tw button{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px;min-width:0}
+.tw input[type=color]{height:34px;padding:2px}
+.tw output{font-weight:400}
+.tw-row{display:flex;gap:8px}
+.tw-row button{flex:1;cursor:pointer}
+.tw pre{margin:0;padding:8px;font-size:11px;white-space:pre-wrap;background:var(--bg);border-radius:6px}
+.tw-fab{position:fixed;top:10px;right:10px;z-index:11;font:600 12px var(--font-body);padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--fg);cursor:pointer}
+body:has(.tw:not([hidden])){padding-right:290px}
+body:has(.tw:not([hidden])) .nav{right:290px}
+{{end}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-terminal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19h8"/><path d="m4 17 6-6-6-6"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+  <symbol id="i-window" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+  <symbol id="i-chevrons-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17-5-5 5-5"/><path d="m18 17-5-5 5-5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+</svg>
+
+<main class="wrap">
+  <div class="top">
+    <span class="brand">Ditch the Vibes</span>
+    {{with .Option}}<span class="chip">Option {{.Letter}} · {{.Name}}</span>{{end}}
+  </div>
+{{if .Page}}
+  <p class="eyebrow">Step {{.Step}} of {{.Total}}</p>
+  <div class="bar" role="progressbar" aria-valuenow="{{.Step}}" aria-valuemin="1" aria-valuemax="{{.Total}}"><i style="width:{{.Pct}}%"></i></div>
+  {{with .Page}}
+  {{if .Finish}}<div class="finish"><svg><use href="#i-check-circle"/></svg></div>{{end}}
+  <h1>{{.Title}}</h1>
+  <p class="lead">{{.Lead}}</p>
+  {{with .Callout}}<div class="callout"><svg><use href="#i-alert"/></svg><div><b>Heads-up</b>{{.}}</div></div>{{end}}
+  {{with .Prompt}}
+  <section class="prompt">
+    <header><span>Prompt</span><button class="btn primary copy" type="button"><span class="idle"><svg><use href="#i-copy"/></svg>Copy prompt</span><span class="done"><svg><use href="#i-check"/></svg>Copied!</span></button></header>
+    <pre>{{.}}</pre>
+  </section>
+  {{end}}
+  {{if .Steps}}<ol class="steps">{{range .Steps}}<li><div>{{.}}</div></li>{{end}}</ol>{{end}}
+  {{with .Note}}<p class="note">{{.}}</p>{{end}}
+  {{end}}
+  <footer class="foot"><svg><use href="#i-camera"/></svg><span>Stuck at any point? Send me a screenshot, or we can FaceTime and you can share your screen.</span></footer>
+{{else}}
+  <p class="eyebrow">Step 1</p>
+  <h1>How do you work on this app?</h1>
+  <p class="lead">Pick the one that matches. Do this once for each app.</p>
+  <div class="options">
+    {{range .Options}}<a class="card" href="/{{.Key}}/2"><span class="ic"><svg><use href="#i-{{.Icon}}"/></svg></span><span class="txt"><small>Option {{.Letter}}</small><b>{{.Name}}</b><span>{{.Blurb}}</span></span><span class="chev"><svg><use href="#i-arrow-right"/></svg></span></a>
+    {{end}}
+  </div>
+  <p class="note"><svg class="inl"><use href="#i-camera"/></svg> Not sure? Send me a screenshot of what you see when you work on it.</p>
+{{end}}
+</main>
+
+{{if .Page}}
+<nav class="nav" aria-label="Steps"><div>
+  <a class="btn" rel="prev" href="{{.Prev}}"><svg><use href="#i-arrow-left"/></svg>Back</a>
+  <a class="btn icon" href="/" aria-label="Start over" title="Start over"><svg><use href="#i-chevrons-left"/></svg></a>
+  {{with .Next}}<a class="btn primary" rel="next" href="{{.}}">Next<svg><use href="#i-arrow-right"/></svg></a>{{end}}
+</div></nav>
+{{end}}
+
+<script>
+const cp=document.querySelector('.copy');
+cp&&cp.addEventListener('click',async()=>{const t=document.querySelector('.prompt pre');try{await navigator.clipboard.writeText(t.textContent)}catch(e){getSelection().selectAllChildren(t)}cp.classList.add('copied');setTimeout(()=>cp.classList.remove('copied'),2000)});
+addEventListener('keydown',e=>{if(e.altKey||e.metaKey||e.ctrlKey||e.target.matches('input,select,textarea'))return;const r=e.key==='ArrowRight'?'next':e.key==='ArrowLeft'?'prev':'';const a=r&&document.querySelector('a[rel='+r+']');a&&a.click()});
+</script>
+
+{{if .Tweaks}}
+<button id="tw-toggle" class="tw-fab" type="button">Tweaks</button>
+<aside id="tw" class="tw" hidden>
+  <h2>Tweaks</h2>
+  <label>Body font<select data-k="body">{{range .BodyFonts}}<option>{{.}}</option>{{end}}</select></label>
+  <label>Heading font<select data-k="heading"><option value="">Same as body</option>{{range .BodyFonts}}<option>{{.}}</option>{{end}}</select></label>
+  <label>Heading weight<select data-k="hw"><option>600</option><option>700</option><option>800</option></select></label>
+  <label>Prompt font<select data-k="prompt"><option value="">Same as body</option>{{range .MonoFonts}}<option>{{.}}</option>{{end}}</select></label>
+  <label>Accent<input type="color" data-k="accent" list="tw-accents"><datalist id="tw-accents"><option value="#2563eb"><option value="#4f46e5"><option value="#7c3aed"><option value="#0d9488"><option value="#059669"><option value="#ea580c"><option value="#e11d48"><option value="#171717"></datalist></label>
+  <label>Theme<select data-k="theme"><option value="light dark">System</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+  <label>Text size<input type="range" min="15" max="19" data-k="size"><output></output></label>
+  <label>Corners<input type="range" min="0" max="22" data-k="radius"><output></output></label>
+  <label>Content width<input type="range" min="480" max="760" step="20" data-k="measure"><output></output></label>
+  <div class="tw-row"><button id="tw-reset" type="button">Reset</button><button id="tw-copy" type="button">Copy settings</button></div>
+  <pre id="tw-out"></pre>
+</aside>
+<script>
+const tw=document.getElementById('tw'),ctl=[...tw.querySelectorAll('[data-k]')],out=document.getElementById('tw-out');
+function twSync(){ctl.forEach(c=>{c.value=TW[c.dataset.k];if(c.type==='range')c.nextElementSibling.value=c.value+'px'});out.textContent=Object.entries(TW).map(([k,v])=>k+': '+(v||'(same as body)')).join('\n')}
+ctl.forEach(c=>c.addEventListener('input',()=>{TW[c.dataset.k]=c.value;localStorage.tweaks=JSON.stringify(TW);twApply(TW);twSync()}));
+document.getElementById('tw-reset').onclick=()=>{TW=Object.assign({},TW_DEF);localStorage.removeItem('tweaks');twApply(TW);twSync()};
+document.getElementById('tw-copy').onclick=()=>navigator.clipboard.writeText(out.textContent);
+document.getElementById('tw-toggle').onclick=()=>{tw.hidden=!tw.hidden;localStorage.twOpen=tw.hidden?'0':'1'};
+tw.hidden=localStorage.twOpen==='0';twSync();
+</script>
+{{end}}
+</body>
+</html>
