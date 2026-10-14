@@ -5,15 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{{.Title}} · Ditch the Vibes</title>
 <meta name="description" content="A short, step-by-step guide to sharing your app’s code on GitHub.">
-<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0b0d11" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='6' fill='%232563eb'/><path d='m6 7 5 5-5 5m7-10 5 5-5 5' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>">
+<meta name="theme-color" content="#0b0d11">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='6' fill='%237c3aed'/><path d='m6 7 5 5-5 5m7-10 5 5-5 5' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{{.FontsHref}}">
 {{if .Tweaks}}<script>
 // Keep TW_DEF in sync with the :root defaults in the stylesheet below.
-const TW_DEF={body:"Inter",heading:"",hw:"700",prompt:"",accent:"#2563eb",theme:"light dark",size:"17",radius:"14",measure:"600"};
+const TW_DEF={body:"Geist",heading:"Manrope",hw:"800",prompt:"JetBrains Mono",accent:"#7c3aed",theme:"dark",size:"17",radius:"12",measure:"600"};
 function twApply(t){const s=document.documentElement.style,f=n=>'"'+n+'",system-ui,sans-serif';
 s.setProperty('--font-body',f(t.body));
 s.setProperty('--font-heading',t.heading?f(t.heading):'var(--font-body)');
@@ -25,15 +24,15 @@ let TW=Object.assign({},TW_DEF,JSON.parse(localStorage.tweaks||'{}'));twApply(TW
 <style>
 *,*::before,*::after{box-sizing:border-box}
 :root{
-  --font-body:"Inter",system-ui,sans-serif;
-  --font-heading:var(--font-body);
-  --font-prompt:var(--font-body);
-  --heading-weight:700;
-  --accent:#2563eb;
+  --font-body:"Geist",system-ui,sans-serif;
+  --font-heading:"Manrope",system-ui,sans-serif;
+  --font-prompt:"JetBrains Mono",ui-monospace,monospace;
+  --heading-weight:800;
+  --accent:#7c3aed;
   --size:17px;
-  --radius:14px;
+  --radius:12px;
   --measure:600px;
-  color-scheme:light dark;
+  color-scheme:dark;
   --bg:light-dark(#f5f6f8,#0b0d11);
   --surface:light-dark(#fff,#151920);
   --fg:light-dark(#121418,#e9ecf1);
@@ -48,8 +47,9 @@ body{margin:0;min-height:100dvh;background:var(--bg);color:var(--fg);font:400 va
 svg{width:1.25em;height:1.25em;flex:none}
 .inl{vertical-align:-.25em}
 .wrap{max-width:var(--measure);margin:0 auto;padding:20px 20px 112px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:36px}
-.brand{font:800 .95em var(--font-heading);letter-spacing:-.02em}
+.top{display:grid;gap:10px;justify-items:start;margin-bottom:32px}
+.brand{margin:0;font-size:.95em;color:var(--muted);text-wrap:pretty}
+.brand b{color:var(--fg);font:800 1em var(--font-heading);letter-spacing:-.02em}
 .chip{font-size:.8em;font-weight:600;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:4px 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .eyebrow{margin:0 0 10px;font-size:.78em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-text)}
 .bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin:0 0 24px}
@@ -78,6 +78,11 @@ h1{margin:0 0 .45em;font:var(--heading-weight) clamp(1.7rem,5vw,2.25rem)/1.12 va
 .steps li::before{content:counter(s);flex:none;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--accent-fg);font-weight:700;font-size:.82em;margin-top:.05em}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:var(--accent-soft);color:var(--accent-text);padding:.1em .4em;border-radius:6px}
 .note{margin:0;color:var(--muted);font-size:.95em}
+.send{display:grid;gap:10px;margin:0 0 20px}
+.send input{width:100%;min-height:48px;padding:10px 14px;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--border);border-radius:calc(var(--radius) - 2px)}
+.send input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.btn[aria-disabled=true]{opacity:.45;pointer-events:none}
+@media(min-width:480px){.send{grid-template-columns:1fr auto}}
 .finish{width:64px;height:64px;display:grid;place-items:center;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);margin:0 0 20px}
 .finish svg{width:34px;height:34px}
 .foot{display:flex;gap:10px;align-items:flex-start;margin-top:32px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:.9em}
@@ -126,12 +131,14 @@ body:has(.tw:not([hidden])) .nav{right:290px}
   <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
   <symbol id="i-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
   <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"/><circle cx="12" cy="13" r="3"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
   <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
 </svg>
 
 <main class="wrap">
   <div class="top">
-    <span class="brand">Ditch the Vibes</span>
+    <p class="brand"><b>Ditch the Vibes:</b> Choose an app you want help with, then follow this guide.</p>
     {{with .Option}}<span class="chip">Option {{.Letter}} · {{.Name}}</span>{{end}}
   </div>
 {{if .Page}}
@@ -141,6 +148,7 @@ body:has(.tw:not([hidden])) .nav{right:290px}
   {{if .Finish}}<div class="finish"><svg><use href="#i-check-circle"/></svg></div>{{end}}
   <h1>{{.Title}}</h1>
   <p class="lead">{{.Lead}}</p>
+  {{if .Finish}}<div class="send"><input id="gh" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Paste the GitHub link here" aria-label="GitHub link"><a id="gh-sms" class="btn primary" href="#" aria-disabled="true">Text it to me<svg><use href="#i-message"/></svg></a></div>{{end}}
   {{with .Callout}}<div class="callout"><svg><use href="#i-alert"/></svg><div><span class="t">Heads-up</span>{{.}}</div></div>{{end}}
   {{with .Prompt}}
   <section class="prompt">
@@ -173,6 +181,9 @@ body:has(.tw:not([hidden])) .nav{right:290px}
 {{end}}
 
 <script>
+const PHONE={{.Phone}},EMAIL={{.Email}};
+const gh=document.getElementById('gh');
+gh&&gh.addEventListener('input',()=>{const a=document.getElementById('gh-sms'),v=gh.value.trim();a.href='sms:'+PHONE+'?&body='+encodeURIComponent("Here's the github link, get to work! "+v);a.setAttribute('aria-disabled',v?'false':'true')});
 const cp=document.querySelector('.copy');
 cp&&cp.addEventListener('click',async()=>{const t=document.querySelector('.prompt pre');try{await navigator.clipboard.writeText(t.textContent)}catch(e){getSelection().selectAllChildren(t)}cp.classList.add('copied');setTimeout(()=>cp.classList.remove('copied'),2000)});
 addEventListener('keydown',e=>{if(e.altKey||e.metaKey||e.ctrlKey||e.target.matches('input,select,textarea'))return;const r=e.key==='ArrowRight'?'next':e.key==='ArrowLeft'?'prev':'';const a=r&&document.querySelector('a[rel='+r+']');a&&a.click()});

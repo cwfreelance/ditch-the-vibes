@@ -38,6 +38,12 @@ type Page struct {
 	Finish  bool
 }
 
+// Where Alexis sends things. ponytail: phone is a placeholder until Colin supplies it.
+const (
+	phone = "+15555555555"
+	email = "colin@colinweaver.com"
+)
+
 const pasteNote = `Being asked to log in or click “Authorize” is normal. When it gives you a GitHub link, tap Next.`
 
 var (
@@ -111,7 +117,7 @@ var flows = map[string][]Page{
 var (
 	bodyFonts   = []string{"Inter", "Geist", "Manrope", "DM Sans", "Plus Jakarta Sans", "Figtree", "Outfit", "Lexend", "Space Grotesk"}
 	monoFonts   = []string{"JetBrains Mono", "IBM Plex Mono", "Geist Mono"}
-	prodFonts   = []string{"Inter"} // keep in sync with :root in page.html
+	prodFonts   = []string{"Geist", "Manrope", "JetBrains Mono"} // keep in sync with :root in page.html
 	googleFonts = map[string]string{
 		"Inter":             "Inter:wght@400;500;600;700;800",
 		"Geist":             "Geist:wght@400;500;600;700;800",
@@ -138,6 +144,7 @@ func fontsHref(names ...string) string {
 
 type view struct {
 	Tweaks               bool
+	Phone, Email         string
 	FontsHref            string
 	BodyFonts, MonoFonts []string
 	Options              []Option
@@ -149,7 +156,7 @@ type view struct {
 }
 
 func newMux(tweaks bool) http.Handler {
-	base := view{Tweaks: tweaks, Options: options, BodyFonts: bodyFonts, MonoFonts: monoFonts, FontsHref: fontsHref(prodFonts...)}
+	base := view{Tweaks: tweaks, Phone: phone, Email: email, Options: options, BodyFonts: bodyFonts, MonoFonts: monoFonts, FontsHref: fontsHref(prodFonts...)}
 	if tweaks {
 		base.FontsHref = fontsHref(append(append([]string{}, bodyFonts...), monoFonts...)...)
 	}
