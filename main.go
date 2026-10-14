@@ -4,10 +4,14 @@ package main
 
 import (
 	"bytes"
+	"crypto/rand"
 	_ "embed"
+	"encoding/hex"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -38,9 +42,9 @@ type Page struct {
 	Finish  bool
 }
 
-// Where Alexis sends things. ponytail: phone is a placeholder until Colin supplies it.
+// Where Alexis sends things.
 const (
-	phone = "+15555555555"
+	phone = "+13122851972"
 	email = "colin@colinweaver.com"
 )
 
@@ -144,7 +148,7 @@ func fontsHref(names ...string) string {
 
 type view struct {
 	Tweaks               bool
-	Phone, Email         string
+	Phone, Email, Ctx    string
 	FontsHref            string
 	BodyFonts, MonoFonts []string
 	Options              []Option
@@ -198,6 +202,7 @@ func newMux(tweaks bool) http.Handler {
 		v.Step, v.Total = n, len(flow)+1
 		v.Pct = n * 100 / v.Total
 		v.Title = fmt.Sprintf("Step %d of %d", n, v.Total)
+		v.Ctx = fmt.Sprintf("Step %d of %d, Option %s", n, v.Total, strings.ToUpper(opt))
 		v.Prev = "/"
 		if n > 2 {
 			v.Prev = fmt.Sprintf("/%s/%d", opt, n-1)
@@ -207,7 +212,53 @@ func newMux(tweaks bool) http.Handler {
 		}
 		render(w, v)
 	})
+	mux.HandleFunc("POST /upload", upload)
 	return mux
+}
+
+// upload stores a screenshot in Vercel Blob and answers {"url": ...}.
+// ponytail: unauthenticated and unthrottled; add a rate limit if the URL ever leaks.
+func upload(w http.ResponseWriter, r *http.Request) {
+	token := os.Getenv("BLOB_READ_WRITE_TOKEN")
+	if token == "" {
+		http.Error(w, "uploads aren't set up on this server", http.StatusServiceUnavailable)
+		return
+	}
+	body, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 10<<20))
+	if err != nil {
+		http.Error(w, "that file is over 10MB", http.StatusRequestEntityTooLarge)
+		return
+	}
+	ct := http.DetectContentType(body)
+	ext, ok := map[string]string{"image/png": ".png", "image/jpeg": ".jpg", "image/gif": ".gif", "image/webp": ".webp"}[ct]
+	if !ok {
+		http.Error(w, "that doesn't look like a screenshot (PNG or JPG)", http.StatusUnsupportedMediaType)
+		return
+	}
+	var id [12]byte
+	rand.Read(id[:])
+	req, _ := http.NewRequestWithContext(r.Context(), "PUT", "https://vercel.com/api/blob?pathname=shots/"+hex.EncodeToString(id[:])+ext, bytes.NewReader(body))
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("x-api-version", "13")
+	req.Header.Set("x-vercel-blob-access", "public")
+	req.Header.Set("x-content-type", ct)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println("blob:", err)
+		http.Error(w, "couldn't reach storage", http.StatusBadGateway)
+		return
+	}
+	defer resp.Body.Close()
+	var out struct {
+		URL string `json:"url"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil || resp.StatusCode != http.StatusOK || out.URL == "" {
+		log.Println("blob:", resp.Status, err)
+		http.Error(w, "storage rejected the upload", http.StatusBadGateway)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(out)
 }
 
 func main() {

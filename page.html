@@ -23,6 +23,7 @@ let TW=Object.assign({},TW_DEF,JSON.parse(localStorage.tweaks||'{}'));twApply(TW
 </script>{{end}}
 <style>
 *,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
 :root{
   --font-body:"Geist",system-ui,sans-serif;
   --font-heading:"Manrope",system-ui,sans-serif;
@@ -79,14 +80,20 @@ h1{margin:0 0 .45em;font:var(--heading-weight) clamp(1.7rem,5vw,2.25rem)/1.12 va
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:var(--accent-soft);color:var(--accent-text);padding:.1em .4em;border-radius:6px}
 .note{margin:0;color:var(--muted);font-size:.95em}
 .send{display:grid;gap:10px;margin:0 0 20px}
-.send input{width:100%;min-height:48px;padding:10px 14px;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--border);border-radius:calc(var(--radius) - 2px)}
-.send input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.field input,.send input{width:100%;min-height:48px;padding:10px 14px;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--border);border-radius:calc(var(--radius) - 2px)}
+.field input:focus,.send input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 .btn[aria-disabled=true]{opacity:.45;pointer-events:none}
 @media(min-width:480px){.send{grid-template-columns:1fr auto}}
 .finish{width:64px;height:64px;display:grid;place-items:center;border-radius:50%;background:var(--accent-soft);color:var(--accent-text);margin:0 0 20px}
 .finish svg{width:34px;height:34px}
-.foot{display:flex;gap:10px;align-items:flex-start;margin-top:32px;padding-top:20px;border-top:1px solid var(--border);color:var(--muted);font-size:.9em}
-.foot svg{margin-top:.15em}
+.help{display:grid;gap:12px;margin-top:32px;padding-top:20px;border-top:1px solid var(--border)}
+.help-txt{display:flex;gap:10px;align-items:flex-start;color:var(--muted);font-size:.9em}
+.help-txt svg{margin-top:.15em}
+.help-send{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.9em}
+.help-send>span{flex:1 1 100%;color:var(--muted)}
+.err{margin:0;color:#f87171;font-size:.9em}
+.field{display:grid;gap:6px;margin:0 0 20px;font-size:.9em;font-weight:600;color:var(--muted)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 18px;border-radius:calc(var(--radius) - 2px);border:1px solid var(--border);background:var(--surface);color:inherit;font:600 1em var(--font-body);text-decoration:none;cursor:pointer;transition:background .15s,border-color .15s,filter .15s}
 .btn:hover{border-color:color-mix(in oklab,var(--fg) 25%,var(--border))}
 .btn.primary{background:var(--accent);color:var(--accent-fg);border-color:transparent}
@@ -104,7 +111,6 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;bac
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 {{if .Tweaks}}
 .tw{position:fixed;top:0;right:0;bottom:0;z-index:10;width:290px;overflow:auto;padding:48px 16px 16px;background:var(--surface);border-left:1px solid var(--border);font-size:13px;display:grid;gap:12px;align-content:start}
-.tw[hidden]{display:none}
 .tw h2{margin:0;font-size:14px}
 .tw label{display:grid;gap:4px;font-weight:600;color:var(--muted)}
 .tw select,.tw input,.tw button{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px;min-width:0}
@@ -139,7 +145,7 @@ body:has(.tw:not([hidden])) .nav{right:290px}
 <main class="wrap">
   <div class="top">
     <p class="brand"><b>Ditch the Vibes:</b> Choose an app you want help with, then follow this guide.</p>
-    {{with .Option}}<span class="chip">Option {{.Letter}} · {{.Name}}</span>{{end}}
+    {{with .Option}}<div class="chips"><span class="chip" id="app-chip" hidden></span><span class="chip">Option {{.Letter}} · {{.Name}}</span></div>{{end}}
   </div>
 {{if .Page}}
   <p class="eyebrow">Step {{.Step}} of {{.Total}}</p>
@@ -159,17 +165,23 @@ body:has(.tw:not([hidden])) .nav{right:290px}
   {{if .Steps}}<ol class="steps">{{range .Steps}}<li><div>{{.}}</div></li>{{end}}</ol>{{end}}
   {{with .Note}}<p class="note">{{.}}</p>{{end}}
   {{end}}
-  <footer class="foot"><svg><use href="#i-camera"/></svg><span>Stuck at any point? Send me a screenshot, or we can FaceTime and you can share your screen.</span></footer>
 {{else}}
   <p class="eyebrow">Step 1</p>
   <h1>How do you work on this app?</h1>
-  <p class="lead">Pick the one that matches. Do this once for each app.</p>
+  <p class="lead">Name the app, then pick the one that matches. Do this once for each app.</p>
+  <label class="field"><span>Project / app name</span><input id="app" type="text" autocomplete="off" maxlength="60" placeholder="e.g. Dog Walker"></label>
   <div class="options">
     {{range .Options}}<a class="card" href="/{{.Key}}/2"><span class="ic"><svg><use href="#i-{{.Icon}}"/></svg></span><span class="txt"><small>Option {{.Letter}}</small><b>{{.Name}}</b><span>{{.Blurb}}</span></span><span class="chev"><svg><use href="#i-arrow-right"/></svg></span></a>
     {{end}}
   </div>
-  <p class="note"><svg class="inl"><use href="#i-camera"/></svg> Not sure? Send me a screenshot of what you see when you work on it.</p>
 {{end}}
+  <section class="help">
+    <div class="help-txt"><svg><use href="#i-camera"/></svg><span>{{if .Page}}Stuck at any point? Send me a screenshot, or we can FaceTime and you can share your screen.{{else}}Not sure? Send me a screenshot of what you see when you work on it.{{end}}</span></div>
+    <input type="file" accept="image/*" id="shot-file" hidden>
+    <div><button class="btn" type="button" id="shot-btn"><svg><use href="#i-camera"/></svg><span>Send a screenshot</span></button></div>
+    <div class="help-send" id="shot-send" hidden><span>Screenshot ready. Send it by:</span><a class="btn primary" id="shot-sms" href="#"><svg><use href="#i-message"/></svg>Text</a><a class="btn" id="shot-mail" href="#"><svg><use href="#i-mail"/></svg>Email</a></div>
+    <p class="err" id="shot-err" hidden></p>
+  </section>
 </main>
 
 {{if .Page}}
@@ -181,9 +193,24 @@ body:has(.tw:not([hidden])) .nav{right:290px}
 {{end}}
 
 <script>
-const PHONE={{.Phone}},EMAIL={{.Email}};
+const PHONE={{.Phone}},EMAIL={{.Email}},CTX={{.Ctx}};
+const appName=()=>localStorage.app||'my app';
+const an=document.getElementById('app');
+if(an){an.value=localStorage.app||'';an.addEventListener('input',()=>{localStorage.app=an.value.trim()})}
+const ac=document.getElementById('app-chip');
+if(ac&&localStorage.app){ac.textContent=localStorage.app;ac.hidden=false}
 const gh=document.getElementById('gh');
-gh&&gh.addEventListener('input',()=>{const a=document.getElementById('gh-sms'),v=gh.value.trim();a.href='sms:'+PHONE+'?&body='+encodeURIComponent("Here's the github link, get to work! "+v);a.setAttribute('aria-disabled',v?'false':'true')});
+gh&&gh.addEventListener('input',()=>{const a=document.getElementById('gh-sms'),v=gh.value.trim();a.href='sms:'+PHONE+'?&body='+encodeURIComponent("Here's the github link for "+appName()+", get to work! "+v);a.setAttribute('aria-disabled',v?'false':'true')});
+const sb=document.getElementById('shot-btn'),sf=document.getElementById('shot-file'),se=document.getElementById('shot-err');
+sb.onclick=()=>sf.click();
+sf.onchange=async()=>{const f=sf.files[0];if(!f)return;sb.disabled=true;sb.lastElementChild.textContent='Uploading…';se.hidden=true;
+try{const r=await fetch('/upload',{method:'POST',body:f});if(!r.ok)throw new Error((await r.text()).trim());const url=(await r.json()).url,name=appName();
+const msg=CTX?"Here's where I'm stuck on "+name+" ("+CTX+"): "+url:"Here's a screenshot of how I work on "+name+": "+url;
+document.getElementById('shot-sms').href='sms:'+PHONE+'?&body='+encodeURIComponent(msg);
+document.getElementById('shot-mail').href='mailto:'+EMAIL+'?subject='+encodeURIComponent('Screenshot: '+name)+'&body='+encodeURIComponent(msg);
+document.getElementById('shot-send').hidden=false}
+catch(e){se.textContent='That didn’t upload ('+e.message+'). Try again, or just text it to me.';se.hidden=false}
+sb.disabled=false;sb.lastElementChild.textContent='Send a screenshot';sf.value=''};
 const cp=document.querySelector('.copy');
 cp&&cp.addEventListener('click',async()=>{const t=document.querySelector('.prompt pre');try{await navigator.clipboard.writeText(t.textContent)}catch(e){getSelection().selectAllChildren(t)}cp.classList.add('copied');setTimeout(()=>cp.classList.remove('copied'),2000)});
 addEventListener('keydown',e=>{if(e.altKey||e.metaKey||e.ctrlKey||e.target.matches('input,select,textarea'))return;const r=e.key==='ArrowRight'?'next':e.key==='ArrowLeft'?'prev':'';const a=r&&document.querySelector('a[rel='+r+']');a&&a.click()});
